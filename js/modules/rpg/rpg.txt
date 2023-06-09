@@ -1,0 +1,1002 @@
+window.requestAnimFrame = (() => {
+	return window.requestAnimationFrame ||
+		window.webkitRequestAnimationFrame ||
+		window.mozRequestAnimationFrame ||
+		window.oRequestAnimationFrame ||
+		window.msRequestAnimationFrame ||
+		function (callback) {
+			window.setTimeout(callback, 1000 / 60);
+		};
+})();
+
+const template = new Template;
+new AppComponent({
+    id: 'app',
+    template: template.appTemplate
+});
+
+/******************** РАСКРАСКИ ********************/
+
+/* 
+
+КЛЕТКА для гиперболического параболоида:
+
+generatePolygons() {
+    for (let i = 0; i < this.count - 1; i++) {
+        for (let j = 0; j < this.count - 1; j++) {
+            const isEven = (i + j) % 2 === 0;
+            const color = isEven ? '#ffffff' : '#000000'; // Белый цвет для четных полигонов, черный для нечетных
+
+            this.polygons.push(new Polygon([
+                i * this.count + j,
+                (i + 1) * this.count + j,
+                (i + 1) * this.count + j + 1,
+                i * this.count + j + 1,
+            ], color));
+        }
+    }
+}
+
+
+КЛЕТКА для тора (бублик, кольцо и тд называйте как хотите):
+
+generatePolygons() {
+        this.color1 = '#ffffff';
+        this.color2 = '#000000';
+      
+        for (let i = 0; i < this.count - 1; i++) {
+          for (let j = 0; j < this.count - 1; j++) {
+            if ((i + j) % 2 === 0) {
+              this.polygons.push(new Polygon([
+                i * this.count + j,
+                (i + 1) * this.count + j,
+                (i + 1) * this.count + j + 1,
+                i * this.count + j + 1,
+              ], this.color1));
+            } else {
+              this.polygons.push(new Polygon([
+                i * this.count + j,
+                (i + 1) * this.count + j,
+                (i + 1) * this.count + j + 1,
+                i * this.count + j + 1,
+              ], this.color2));
+            }
+          }
+      
+          if (i % 2 === 0) {
+            this.polygons.push(new Polygon([
+              i * this.count,
+              (i + 1) * this.count - 1,
+              (i + 2) * this.count - 1,
+              (i + 1) * this.count,
+            ], this.color2));
+          } else {
+            this.polygons.push(new Polygon([
+              i * this.count,
+              (i + 1) * this.count - 1,
+              (i + 2) * this.count - 1,
+              (i + 1) * this.count,
+            ], this.color1));
+          }
+      
+          if (i % 2 === 0) {
+            this.polygons.push(new Polygon([
+              i,
+              this.points.length - this.count + i,
+              this.points.length - this.count + i + 1,
+              i + 1,
+            ], this.color1));
+          } else {
+            this.polygons.push(new Polygon([
+              i,
+              this.points.length - this.count + i,
+              this.points.length - this.count + i + 1,
+              i + 1,
+            ], this.color2));
+          }
+        }
+      
+        this.polygons.push(new Polygon([
+          this.points.length - 1,
+          this.points.length - this.count,
+          0,
+          this.count - 1,
+        ], this.color2));
+      }
+
+КЛЕТКА для двуполосного гиперболоида:
+
+generatePolygons() {
+        const sqrCount = Math.pow(this.count, 2);
+        const colors = ["#ffffff", "#000000"]; // Цвета для чередующихся клеток
+    
+        for (let i = 0; i < this.count - 1; i++) {
+            for (let j = 0; j < this.count - 1; j++) {
+                const cellColor = colors[(i + j) % 2]; // Цвет клетки
+    
+                this.polygons.push(new Polygon([
+                    i * this.count + j,
+                    (i + 1) * this.count + j,
+                    (i + 1) * this.count + j + 1,
+                    i * this.count + j + 1,
+                ], cellColor));
+    
+                this.polygons.push(new Polygon([
+                    i * this.count + sqrCount + j,
+                    (i + 1) * this.count + sqrCount + j,
+                    (i + 1) * this.count + sqrCount + j + 1,
+                    i * this.count + sqrCount + j + 1,
+                ], cellColor));
+            }
+    
+            const rowColor = colors[i % 2]; // Цвет строки
+    
+            this.polygons.push(new Polygon([
+                i * this.count,
+                (i + 1) * this.count - 1,
+                (i + 2) * this.count - 1,
+                (i + 1) * this.count,
+            ], rowColor));
+    
+            const triangleColor = colors[(i + 1) % 2]; // Цвет треугольника
+    
+            this.polygons.push(new Polygon([
+                i * this.count + sqrCount,
+                (i + 1) * this.count + sqrCount - 1,
+                (i + 2) * this.count + sqrCount - 1,
+                (i + 1) * this.count + sqrCount,
+            ], triangleColor));
+        }
+    }
+
+КЛЕТКА для гиперболического цилиндра:
+
+generatePolygons() {
+        const sqrCount = Math.pow(this.count, 2);
+        const colors = ["#ffffff", "#000000"]; // Цвета для чередующихся клеток
+    
+        for (let i = 0; i < this.count - 1; i++) {
+            for (let j = 0; j < this.count - 1; j++) {
+                const cellColor = colors[(i + j) % 2]; // Цвет клетки
+    
+                this.polygons.push(new Polygon([
+                    i * this.count + j,
+                    (i + 1) * this.count + j,
+                    (i + 1) * this.count + j + 1,
+                    i * this.count + j + 1,
+                ], cellColor));
+    
+                this.polygons.push(new Polygon([
+                    i * this.count + sqrCount + j,
+                    (i + 1) * this.count + sqrCount + j,
+                    (i + 1) * this.count + sqrCount + j + 1,
+                    i * this.count + sqrCount + j + 1,
+                ], cellColor));
+            }
+        }
+    }
+
+КЛЕТКА для параболического цилиндра:
+
+generatePolygons() {
+        const stepIndex = Math.pow(this.count, 2);
+        const colors = ["#ffffff", "#000000"]; // Цвета для чередующихся клеток
+    
+        for (let i = 0; i < this.count - 1; i++) {
+            for (let j = 0; j < this.count - 1; j++) {
+                const cellColor = colors[(i + j) % 2]; // Цвет клетки
+    
+                this.polygons.push(new Polygon([
+                    i * this.count + j,
+                    (i + 1) * this.count + j,
+                    (i + 1) * this.count + j + 1,
+                    i * this.count + j + 1,
+                ], cellColor));
+    
+                this.polygons.push(new Polygon([
+                    i * this.count + stepIndex + j,
+                    (i + 1) * this.count + stepIndex + j,
+                    (i + 1) * this.count + stepIndex + j + 1,
+                    i * this.count + stepIndex + j + 1,
+                ], cellColor));
+            }
+        }
+    }
+	
+КЛЕТКА для всех остальных фигур:
+
+let color1 = '#00ff00'; 
+let color2 = '#00ffff'; 
+for (let i = 0; i < points.length; i++) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0) {
+        if (i % 2 === 0) polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        else polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2));
+    } else if (i + count < points.length && (i + 1) % count === 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2))
+    }
+    if ((i + 1 + count) % count === 0) {
+        let a = color1;
+        color1 = color2;
+        color2 = a;
+    }
+}
+	
+ПОЛОСКА вертикальная через 1 для гиперболического параболоида
+
+generatePolygons() {
+        const colors = ["#ffffff", "#000000"]; // Цвета для чередующихся полосок
+    
+        for (let i = 0; i < this.count - 1; i++) {
+            for (let j = 0; j < this.count - 1; j++) {
+                const stripeColor = colors[j % 2]; // Цвет полоски
+    
+                this.polygons.push(new Polygon([
+                    i * this.count + j,
+                    (i + 1) * this.count + j,
+                    (i + 1) * this.count + j + 1,
+                    i * this.count + j + 1,
+                ], stripeColor));
+            }
+        }
+    }
+
+ПОЛОСКА вертикальная через 1 для тора (бублик, кольцо и тд называйте как хотите):
+
+let color1 = '#00ff00'; 
+let color2 = '#00ffff'; 
+for (let i = 0; i < points.length; i++) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 2 === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+    } else if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 2 !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2))
+    } else if (i + count < points.length && (i + 1) % count === 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2))
+    }
+    if (!points[i + count] && i + 1 < points.length) {
+        if (i%2===0) polygons.push(new Polygon([i, i + 1, count - (points.length - i) + 1, count - (points.length - i)], color1));
+        else polygons.push(new Polygon([i, i + 1, count - (points.length - i) + 1, count - (points.length - i)], color2));
+    }
+    polygons.push(new Polygon([19, 0, 380, 399], color2));
+}
+
+ПОЛОСКА вертикальная через 1 для двуполосного гиперболоида:
+
+let color1 = '#00ff00'; 
+let color2 = '#00ffff'; 
+for (let i = 0; i < points.length / 2 - count; i++) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 2 === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+    } else if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 2 !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2))
+    } else if (i + count < points.length && (i + 1) % count === 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2))
+    }
+}
+for (let i = points.length / 2; i < points.length; i++) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 2 === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+    } else if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 2 !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2))
+    } else if (i + count < points.length && (i + 1) % count === 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2))
+    }
+}
+
+ПОЛОСКА вертикальная через 1 для параболического цилиндра:
+
+let color1 = '#00ff00'; 
+let color2 = '#00ffff';   
+for (let i = 0; i < points.length; i++) {
+    if ((i % 2) === 0) {
+        if (i + 1 + count < points.length && (i + 1) % count !== 0)  {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        } else if (i + 1 + count < points.length && (i + 1) % count !== 0)  {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1))
+        }
+    } else {
+        if (i + 1 + count < points.length && (i + 1) % count !== 0)  {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2));
+        } else if (i + 1 + count < points.length && (i + 1) % count !== 0) {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2))
+        }
+    }
+}
+
+ПОЛОСКА вертикальная через 1 для гиперболического цилиндра:
+
+let color1 = '#00ff00'; 
+let color2 = '#00ffff';   
+for (let i = 0; i < points.length / 2 - count; i++) {
+    if ((i % 2) === 0 ) {
+        if (i + 1 + count < points.length && (i + 1) % count !== 0)  {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        } else if (i + 1 + count < points.length && (i + 1) % count !== 0)  {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1))
+        }
+    } else {
+        if (i + 1 + count < points.length && (i + 1) % count !== 0)  {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2));
+        } else if (i + 1 + count < points.length && (i + 1) % count !== 0) {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2))
+        }
+    }
+}
+for (let i = points.length / 2; i < points.length; i++) {
+    if ((i % 2) === 0 ) {
+        if (i + 1 + count < points.length && (i + 1) % count !== 0)  {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        } else if (i + 1 + count < points.length && (i + 1) % count !== 0)  {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1))
+        }
+    } else {
+        if (i + 1 + count < points.length && (i + 1) % count !== 0)  {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2));
+        } else if (i + 1 + count < points.length && (i + 1) % count !== 0) {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2))
+        }
+    }
+}
+	
+ПОЛОСКА вертикальная через 1 для всех остальных фигур:
+
+let color1 = '#00ff00';    
+let color2 = '#00ffff';
+for (let i = 0; i < points.length; i++) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 2 === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+    } else if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 2 !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2))
+    } else if (i + count < points.length && (i + 1) % count === 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2))
+    }
+}
+
+ПОЛОСКА вертикальная через 2 для гиперболического параболоида:
+
+let color1 = '#00ff00';    
+let color2 = '#00ffff';
+let i = 0; 
+while (i < points.length) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 4 === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        polygons.push(new Polygon([i + 1, i + 2, i + 2 + count, i + 1 + count], color1));
+        i = i + 1;
+    } else if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 4 !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2));
+    } 
+    i++;
+}
+
+ПОЛОСКА вертикальная через 2 для двуполосного гиперболоида:
+
+let color1 = '#00ff00'; 
+let color2 = '#00ffff'; 
+let i = 0;
+while (i < points.length / 2 - count) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 4 === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        polygons.push(new Polygon([i + 1, i + 2, i + 2 + count, i + 1 + count], color1));
+        i = i + 1;
+    } else if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 4 !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2));
+    } else if (i + count < points.length && (i + 1) % count === 0 && i % 4 !== 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2));
+    }
+    i++;
+}
+i = points.length / 2;
+while (i < points.length) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 4 === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        polygons.push(new Polygon([i + 1, i + 2, i + 2 + count, i + 1 + count], color1));
+        i = i + 1;
+    } else if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 4 !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2));
+    } else if (i + count < points.length && (i + 1) % count === 0 && i % 4 !== 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2));
+    }
+    i++;
+}
+
+ПОЛОСКА вертикальная через 2 для тора (бублик, кольцо и тд называйте как хотите):
+
+let color1 = '#00ff00';    
+let color2 = '#00ffff';
+let i = 0; 
+while (i < points.length) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 4 === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        polygons.push(new Polygon([i + 1, i + 2, i + 2 + count, i + 1 + count], color1));
+        i = i + 1;
+    } else if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 4 !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2));
+    } else if (i + count < points.length && (i + 1) % count === 0 && i % 4 !== 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2));
+    }
+    if (!points[i + count] && i + 1 < points.length) {
+        if (i % 4 === 0) {
+            polygons.push(new Polygon([i, i + 1, count - (points.length - i) + 1, count - (points.length - i)], color1));
+            polygons.push(new Polygon([i + 1, i + 2, count - (points.length - i) + 2, count + 1 - (points.length - i)], color1));
+            i = i + 1;
+        } else polygons.push(new Polygon([i, i + 1, count - (points.length - i) + 1, count - (points.length - i)], color2));
+    }
+    polygons.push(new Polygon([19, 0, 380, 399], color2));
+    i++;
+}
+
+ПОЛОСКА вертикальная через 2 для всех остальных фигур:
+(для конуса, цилиндра count=16)
+
+let color1 = '#00ff00';    
+let color2 = '#00ffff';
+let i = 0; 
+while (i < points.length) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 4 === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        polygons.push(new Polygon([i + 1, i + 2, i + 2 + count, i + 1 + count], color1));
+        i = i + 1;
+    } else if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 4 !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2));
+    } else if (i + count < points.length && (i + 1) % count === 0 && i % 4 !== 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2));
+    }
+    i++;
+}
+
+ПОЛОСКА вертикальная через 3 для двуполосного гиперболоида:
+(count=30)
+
+let color1 = '#00ff00'; 
+let color2 = '#00ffff'; 
+let i = 0;
+while (i < points.length / 2 - count) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 3 === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        polygons.push(new Polygon([i + 1, i + 2, i + 2 + count, i + 1 + count], color1));
+        polygons.push(new Polygon([i + 2, i + 3, i + 3 + count, i + 2 + count], color1));
+        i = i + 3;
+    } else if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 3 !== 0) {
+        polygons.push(new Polygon([i - 1, i, i + count, i + count - 1], color2));
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2));
+    } else if (i + count < points.length && (i + 1) % count === 0 && i % 3 !== 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2));
+    }
+    i++;
+}
+i = points.length / 2;
+while (i < points.length) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 3 === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        polygons.push(new Polygon([i + 1, i + 2, i + 2 + count, i + 1 + count], color1));
+        polygons.push(new Polygon([i + 2, i + 3, i + 3 + count, i + 2 + count], color1));
+        i = i + 3;
+    } else if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 3 !== 0) {
+        polygons.push(new Polygon([i - 1, i, i + count, i + count - 1], color2));
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2));
+    } else if (i + count < points.length && (i + 1) % count === 0 && i % 3 !== 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2));
+    }
+    i++;
+}
+
+ПОЛОСКА вертикальная через 3 для всех остальных фигур:
+(для сферы, однополосного гиперболоида count=30)
+
+let color1 = '#00ff00';    
+let color2 = '#00ffff';
+let i = 0; 
+while (i < points.length) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 3 === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        polygons.push(new Polygon([i + 1, i + 2, i + 2 + count, i + 1 + count], color1));
+        polygons.push(new Polygon([i + 2, i + 3, i + 3 + count, i + 2 + count], color1));
+        i = i + 3;
+    } else if (i + 1 + count < points.length && (i + 1) % count !== 0 && i % 3 !== 0) {
+        polygons.push(new Polygon([i - 1, i, i + count, i + count - 1], color2));
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2));
+    } else if (i + count < points.length && (i + 1) % count === 0 && i % 3 !== 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2));
+    }
+    i++;
+}
+
+ПОЛОСКА горизонтальная через 1 для гиперболического параболоида:
+
+let color1 = '#00ff00';    
+let color2 = '#00ffff';
+for (let i = 0; i < points.length; i++) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0) {
+        if ( i % 2 === 0) polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        else polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color2));
+    } 
+}
+
+ПОЛОСКА горизонтальная через 1 для тора (бублик, кольцо и тд называйте как хотите):
+
+let color1 = '#00ff00';    
+let color2 = '#00ffff';
+let i = 0; 
+while (i < points.length) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+    } else if (i + count < points.length && (i + 1) % count === 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2))
+    }
+    if ((i + 1 + count) % count === 0) {
+        let a = color1;
+        color1 = color2;
+        color2 = a;
+    }
+    if (!points[i + count] && i + 1 < points.length) {
+        polygons.push(new Polygon([i, i + 1, count - (points.length - i) + 1, count - (points.length - i)], color1));
+    }
+    i++;
+}
+
+ПОЛОСКА горизонтальная через 1 для двуполосного гиперболоида:
+
+let color1 = '#00ff00'; 
+let color2 = '#00ffff'; 
+let i = 0;
+while (i < points.length / 2 - count) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+    } else if (i + count < points.length && (i + 1) % count === 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2))
+    }
+    i++;
+    if ((i + 1 + count) % count === 0) {
+        let a = color1;
+        color1 = color2;
+        color2 = a;
+    }
+}
+i = points.length / 2;
+while (i < points.length) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+    } else if (i + count < points.length && (i + 1) % count === 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2))
+    }
+    i++;
+    if ((i + 1 + count) % count === 0) {
+        let a = color1;
+        color1 = color2;
+        color2 = a;
+    }
+}
+
+ПОЛОСКА горизонтальная через 1 для всех остальных фигур:
+
+let color1 = '#00ff00';
+let color2 = '#00ffff';
+let i = 0;
+while (i < points.length) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+    } else if (i + count < points.length && (i + 1) % count === 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color2))
+    }
+    i++;
+    if ((i + 1 + count) % count === 0) {
+        let a = color1;
+        color1 = color2;
+        color2 = a;
+    }
+}
+
+РАДУГА для тора (бублик, кольцо и тд называйте как хотите):
+
+let color1 = '#ff0000';
+let color2 = '#ffa600';
+let color3 = '#ffff00';
+let color4 = '#00ff00';
+let color5 = '#00ffff';
+let color6 = '#0000ff';
+let color7 = '#800080';
+let i = 0;
+let d = 1;
+let g = 1;
+let color = color1;
+while (i < points.length - count) {
+    while (i < count * g && (i + 1) % count !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color));
+        i++;
+    }
+    if (i < count * g && (i + 1) % count === 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color))
+    } 
+    i = i + 1;
+    d++;
+    g++;
+    if (d === 1) color = color1;
+    else if (d === 2) color = color2;
+    else if (d === 3) color = color3;
+    else if (d === 4) color = color4;
+    else if (d === 5) color = color5;
+    else if (d === 6) color = color6;
+    else if (d === 7) color = color7;
+    else if (d === 8) {
+        d = 1;
+        color = color1; 
+    }
+}
+for (let r = 380; r < 399; r++) {
+        polygons.push(new Polygon([r, r + 1, count - (points.length - r) + 1, count - (points.length - r)], color));
+}
+polygons.push(new Polygon([19, 0, 380, 399], color));
+
+РАДУГА для гиперболического параболоида:
+
+let color1 = '#ff0000';
+let color2 = '#ffa600';
+let color3 = '#ffff00';
+let color4 = '#00ff00';
+let color5 = '#00ffff';
+let color6 = '#0000ff';
+let color7 = '#800080';
+let i = 0;
+let d = 1;
+let g = 1;
+let color = color1;
+while (i < points.length - count) {
+    while (i < count * g && (i + 1) % count !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color));
+        i++;
+    }
+    i = i + 1;
+    d++;
+    g++;
+    if (d === 1) color = color1;
+    else if (d === 2) color = color2;
+    else if (d === 3) color = color3;
+    else if (d === 4) color = color4;
+    else if (d === 5) color = color5;
+    else if (d === 6) color = color6;
+    else if (d === 7) color = color7;
+    else if (d === 8) {
+        d = 1;
+        color = color1;
+    }
+}
+
+РАДУГА для двуполосного гиперболоида:
+
+let color1 = '#ff0000';
+let color2 = '#ffa600';
+let color3 = '#ffff00';
+let color4 = '#00ff00';
+let color5 = '#00ffff';
+let color6 = '#0000ff';
+let color7 = '#800080';
+let i = 0;
+let d = 1;
+let g = 1;
+let color = color1;
+while (i < points.length / 2 - count) {
+    while (i < count * g && (i + 1) % count !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color));
+        i++;
+    }
+    if (i < count * g && (i + 1) % count === 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color))
+    }
+    i = i + 1;
+    d++;
+    g++;
+    if (d === 1) color = color1;
+    else if (d === 2) color = color2;
+    else if (d === 3) color = color3;
+    else if (d === 4) color = color4;
+    else if (d === 5) color = color5;
+    else if (d === 6) color = color6;
+    else if (d === 7) color = color7;
+    else if (d === 8) {
+        d = 1;
+        color = color1;
+    }
+}
+i = points.length / 2;
+while (i < points.length- count) {
+    while (i < count * g && (i + 1) % count !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color));
+        i++;
+    }
+    if (i < count * g && (i + 1) % count === 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color))
+    }
+    i = i + 1;
+    d++;
+    g++;
+    if (d === 1) color = color1;
+    else if (d === 2) color = color2;
+    else if (d === 3) color = color3;
+    else if (d === 4) color = color4;
+    else if (d === 5) color = color5;
+    else if (d === 6) color = color6;
+    else if (d === 7) color = color7;
+    else if (d === 8) {
+        d = 1;
+        color = color1;
+    }
+}
+
+РАДУГА для всех остальных фигур:
+
+let color1 = '#ff0000';
+let color2 = '#ffa600';
+let color3 = '#ffff00';
+let color4 = '#00ff00';
+let color5 = '#00ffff';
+let color6 = '#0000ff';
+let color7 = '#800080';
+let i = 0;
+let d = 1;
+let g = 1;
+let color = color1;
+while (i < points.length - count) {
+    while (i < count * g && (i + 1) % count !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color));
+        i++;
+    }
+    if (i < count * g && (i + 1) % count === 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color))
+    }
+    i = i + 1;
+    d++;
+    g++;
+    if (d === 1) color = color1;
+    else if (d === 2) color = color2;
+    else if (d === 3) color = color3;
+    else if (d === 4) color = color4;
+    else if (d === 5) color = color5;
+    else if (d === 6) color = color6;
+    else if (d === 7) color = color7;
+    else if (d === 8) {
+        d = 1;
+        color = color1;
+    }
+}
+
+КЛЕТКА с 4 квадратиками для гиперболического параболоида:
+
+let color1 = '#00ff00';
+let color2 = '#00ffff';
+let i = 0;
+while (i < points.length) {
+    if (i >= 2 * count && i % (2 * count) === 0) {
+        let a = color1;
+        color1 = color2;
+        color2 = a;
+    }
+    if (i + 1 + count < points.length && (i + 2) % count !== 0) {
+        if (i % 2 === 0) {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+            polygons.push(new Polygon([i + 1, i + 2, i + 2 + count, i + 1 + count], color1));
+            let a = color1;
+            color1 = color2;
+            color2 = a;
+        }
+    } 
+    i = i + 2;  
+}
+
+КЛЕТКА с 4 квадратиками для двуполосного гиперболоида:
+
+let color1 = '#ff0000';
+let color2 = '#ffa600';
+let i = 0;
+while (i < points.length / 2 - count) {
+    if (i >= 2 * count && i % (2 * count) === 0) {
+        let a = color1;
+        color1 = color2;
+        color2 = a;
+    }
+    if (i + 1 + count < points.length && (i + 2) % count !== 0) {
+        if (i % 2 === 0) {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+            polygons.push(new Polygon([i + 1, i + 2, i + 2 + count, i + 1 + count], color1));
+            let a = color1;
+            color1 = color2;
+            color2 = a;
+        }
+    } else if (i + 1 + count < points.length && (i + 2) % count === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        polygons.push(new Polygon([i + 1, i + 2 - count, i + 2, i + 1 + count], color1));
+    }
+    i = i + 2; 
+}
+i = points.length / 2;
+while (i < points.length - count ) {
+    if (i >= 2 * count && i % (2 * count) === 0) {
+        let a = color1;
+        color1 = color2;
+        color2 = a;
+    }
+    if (i + 1 + count < points.length && (i + 2) % count !== 0) {
+        if (i % 2 === 0) {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+            polygons.push(new Polygon([i + 1, i + 2, i + 2 + count, i + 1 + count], color1));
+            let a = color1;
+            color1 = color2;
+            color2 = a;
+        }
+    } else if (i + 1 + count < points.length && (i + 2) % count === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        polygons.push(new Polygon([i + 1, i + 2 - count, i + 2, i + 1 + count], color1));
+    }
+    i = i + 2; 
+}
+
+КЛЕТКА с 4 квадратиками для тора (бублик, кольцо и тд называйте как хотите):
+
+let color1 = '#00ff00';
+let color2 = '#00ffff';
+let i = 0;
+while (i < points.length-2) {
+    if (i >= 2 * count && i % (2 * count) === 0) {
+        let a = color1;
+        color1 = color2;
+        color2 = a;
+    }
+    if (i + 1 + count < points.length && (i + 2) % count !== 0) {
+        if (i % 2 === 0) {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+            polygons.push(new Polygon([i + 1, i + 2, i + 2 + count, i + 1 + count], color1));
+            let a = color1;
+            color1 = color2;
+            color2 = a;
+        }
+    } else if (i + 1 + count < points.length && (i + 2) % count === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        polygons.push(new Polygon([i + 1, i + 2 - count, i + 2, i + 1 + count], color1));
+    }
+    if (!points[i + count] && i + 1 < points.length) {
+        console.log(i)
+        if (i % 2 === 0) {
+            polygons.push(new Polygon([i, i + 1, count - (points.length - i) + 1, count - (points.length - i)], color1));
+            polygons.push(new Polygon([i + 1, i + 2, count - (points.length - i) + 2, count + 1 - (points.length - i)], color1));
+            let a = color1;
+            color1 = color2;
+            color2 = a;
+        } else if (i % 4 !== 0) {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+            polygons.push(new Polygon([i + 1, i + 2 - count, i + 2, i + 1 + count], color1));
+        }
+    }
+    i = i + 2;  
+}
+polygons.push(new Polygon([19, 0, 380, 399], color1));
+polygons.push(new Polygon([18, 19, 399, 398], color1));
+
+КЛЕТКА с 4 квадратиками для всех остальных фигур:
+(count=16)
+
+let color1 = '#00ff00';
+let color2 = '#00ffff';
+let i = 0;
+while (i < points.length) {
+    if (i >= 2 * count && i % (2 * count) === 0) {
+        let a = color1;
+        color1 = color2;
+        color2 = a;
+    }
+    if (i + 1 + count < points.length && (i + 2) % count !== 0) {
+        if (i % 2 === 0) {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+            polygons.push(new Polygon([i + 1, i + 2, i + 2 + count, i + 1 + count], color1));
+            let a = color1;
+            color1 = color2;
+            color2 = a;
+        }
+    } else if (i + 1 + count < points.length && (i + 2) % count === 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color1));
+        polygons.push(new Polygon([i + 1, i + 2 - count, i + 2, i + 1 + count], color1));
+    }
+    i = i + 2;  
+}
+
+8 четвертей для сферы:
+(count=16)
+
+let color1 = '#ff0000';
+let color2 = '#ffa600';
+let color3 = '#ffff00';
+let color4 = '#00ff00';
+let color5 = '#00ffff';
+let color6 = '#0000ff';
+let color7 = '#800080'; 
+let color8 = '#000000';
+let a = 4;
+let i = 0;
+let b = 4;
+let color = color1;
+while (i < points.length - count) {
+    color = color1;
+    while (i < b && (i + 1) % count !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color));
+        i++;
+    }
+    b = b + 4;
+    color = color2;
+    while (i < b && (i + 1) % count !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color));
+        i++;
+    }
+    b = b + 4;
+    color = color3;
+    while (i < b && (i + 1) % count !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color));
+        i++;
+    }
+    b = b + 4;
+    color = color4;
+    while (i < b && (i + 1) % count !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color));
+        i++;
+    }
+    if (i < b && (i + 1) % count === 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color))
+    }
+    b = b + 4;
+    if (i > 50) {
+        color1 = color5;
+        color2 = color6;
+        color3 = color7; 
+        color4 = color8; 
+    }
+    i++;
+}
+
+раскраска рандомными цветами (для всех фигур):
+
+прицип одинаковый, создаем переменную перед цикло вот такую -
+let color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+
+в какждом polygons.push пишем аргумент color
+после каждого polygons.push обновляем перменную color -
+color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+
+и все работает
+
+вот вам пример для конуса, все остальные фигуры идентичны:
+let color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+for (let i = 0; i < points.length; i++) {
+    if (i + 1 + count < points.length && (i + 1) % count !== 0) {
+        polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], color));
+        color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    } else if (i + count < points.length && (i + 1) % count === 0) {
+        polygons.push(new Polygon([i, i + 1 - count, i + 1, i + count], color))
+        color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    }
+}
+
+клетка 3 на 3 для гиперболического параболоида (седла):
+(count = 30)
+let k=0;
+for (let i = 0; i < points.length; i++) {
+    if (((i / 3) % count) == 0) {
+        k++;
+    }
+    if (((i + k * 3) % 6) <= 2) {
+        if (i + 1 + count < points.length && (i + 1) % count !== 0) {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], "#ffff00"));
+        }
+    } else {
+        if (i + 1 + count < points.length && (i + 1) % count !== 0) {
+            polygons.push(new Polygon([i, i + 1, i + 1 + count, i + count], "#2e3dfe"));
+        }
+    }
+}
+
+точки для него тоже надо изменить:
+for (let x = -count/2; x < count/2; x++) {
+    for (let y = -count/2; y < count/2; y++) {
+        points.push(new Point(
+            x,
+            y,
+            x * x / (a * a) - y * y / (b * b)
+        ));
+    }
+}
+*/

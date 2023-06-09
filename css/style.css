@@ -1,0 +1,128 @@
+body {
+    background-image: url(img/bg.jpg);
+    display: flex;
+    justify-content: center;
+}
+
+.menu {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+
+
+}
+
+.menu-item {
+    justify-content: center;
+    padding: 5px;
+    margin: 5px;
+    background-color: azure;
+    box-sizing: border-box;
+    cursor: pointer;
+    border: solid 2px #3d4950;
+    border-radius: 5px;
+    width: 200px;
+    height: 50%;
+    line-height: 25px;
+    background-color: #597481;
+    color: rgb(237, 237, 237);
+}
+
+.menu-item:hover {
+    background-color: #526b77;
+    transition: 1s;
+    transform: scale(1.02);
+    box-shadow: 2px;
+}
+
+.hide {
+    display: none;
+}
+
+.spanColor {
+    color: whitesmoke;
+    background-color: #3d4950;
+    border: 1px solid black;
+    border-radius: 5px;
+    height: 20px;
+    width: 10%;
+    margin: 0 auto;
+    display: block;
+}
+
+.menu-item-buttons {
+    width: 100px;
+    height: 30px;
+    margin-top: 10px;
+    border: solid 1px black;
+    border-radius: 2px;
+}
+
+/* #canvas3d{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+} */
+
+.menu-item-inputs{
+    border: solid 1px black;
+    height: 20px;
+    border-radius: 5px;
+    margin: 2px;
+}
+
+.buttons-container{
+    display: flex;
+    justify-content: center;
+}
+
+#shoterContent{
+    border: solid 2px #3d4950;
+    border-radius: 20px;
+    background-color:#3e525d ;
+    height: 700px;
+    justify-content: center;
+    align-items: center;   
+}
+
+.menuGraphButton2 {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: var(--gray-light);
+	width: 30px;
+	height: 30px;
+	scrollbar-gutter: stable;
+	top: 0;
+	left: 0;
+    left: 2.5%;
+    top:2.4%;
+	transition: 0.4s;
+	margin-top: 50px;
+    font-size: 30px;
+}
+
+.container3 {
+	flex-direction: column;
+	display: flex;
+	background-color: none;
+	height: 500px;
+	scrollbar-gutter: stable;
+	top: 0;
+	left: 0;
+	transition: 0.2s;
+	overflow: hidden;
+}
+
+
+.down {
+    scale: 110%;
+	transition: all 0.2s;
+}
+
+  
